@@ -1,8 +1,13 @@
 import { User } from "../models/user";
 import { HttpError, ctrlWrapper } from "../helpers";
 
-
 const register = async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (user) {
+        throw HttpError(409, "Email in use");
+    }
     const newUser = await User.create(req.body);
     res.status(201).json({
         name: newUser.name,
@@ -31,6 +36,4 @@ const register = async (req, res) => {
 //     });
 // };
 
-export { register: ctrlWrapper(register),
-    // login: ctrlWrapper(login) 
-};  
+export { register };
