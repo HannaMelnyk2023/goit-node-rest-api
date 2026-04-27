@@ -9,10 +9,10 @@ import { authenticate } from "../middlewares/index.js";
 
 
 // singup
-router.post("/register", validateBody(schemas.register), register);
+router.post("/register", validateBody(schemas.register), ctrl.register);
 // singin
-router.post("/login", validateBody(schemas.login), login);
+router.post("/login", validateBody(schemas.login), ctrl.login);
 // current
-router.get("/current", "authenticate", getCurrent);
+router.get("/current", "authenticate", ctrl.getCurrent);
 // log-out
-router.post("/logout", "authenticate", logout);
+router.post("/logout", "authenticate", ctrl.logout);
