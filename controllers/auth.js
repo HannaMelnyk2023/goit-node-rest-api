@@ -1,9 +1,9 @@
 import { User } from "../models/user";
-import { HttpError, ctrlWrapper } from "../helpers";
+import { HttpError } from "../helpers";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const { SECRET_CODE } = process.env;
+const { SECRET_KEY } = process.env;
 
 
 const register = async (req, res) => {
@@ -28,7 +28,7 @@ const login = async (req, res) => {
     const payload = {
         id: user._id,
     };
-    const token = jwt.sign(payload, SECRET_CODE, { expiresIn: "23h" });
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
     await User.findByIdAndUpdate(user._id, { token });
 
     if (!user) {
@@ -39,12 +39,6 @@ const login = async (req, res) => {
         throw HttpError(401, "Email or password is invalid");
     }
 
-    //    const isMatch = await user.comparePassword(password);
-
-    //     if (!isMatch) {
-    //       throw HttpError(401, "Email or password is wrong");
-    //     }
-
     res.json({
         token: user.token,
         name: user.name,
@@ -52,4 +46,12 @@ const login = async (req, res) => {
     });
 };
 
-export { register, login };
+const getCurrent = async (req, res) => {
+    const { email, name } = req.user;
+    res.json({
+        email,
+        name
+    })
+}
+
+export { register, login, getCurrent, };
