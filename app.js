@@ -5,8 +5,14 @@ import cors from "cors";
 import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/auth.js";
 
+import bcrypt from "bcryptjs";
 
 const app = express();
+const createHashPassword = async (password) => {
+  const salt = await bcrypt.genSalt(10);
+  const result = await bcrypt.hash(password, salt);
+  return result;
+}
 
 app.use(morgan("tiny"));
 app.use(cors());
