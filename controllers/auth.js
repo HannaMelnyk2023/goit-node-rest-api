@@ -54,4 +54,10 @@ const getCurrent = async (req, res) => {
     })
 }
 
-export { register, login, getCurrent, };
+const logout = async (req, res) => {
+    const { _id } = req.user;
+    await User.findByIdAndUpdate(_id, { token: null });
+    res.json({ message: "Logout successful" });
+}
+
+export { register, login, getCurrent, logout };
