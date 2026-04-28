@@ -5,21 +5,14 @@ import cors from "cors";
 import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/auth.js";
 
-import bcrypt from "bcryptjs";
-
 const app = express();
-const createHashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  const result = await bcrypt.hash(password, salt);
-  return result;
-}
 
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
-app.use("/api/auth", authRouter);
+app.use("/api/users", authRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
@@ -33,3 +26,5 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log("Server is running. Use our API on port: 3000");
 });
+
+export default app;
