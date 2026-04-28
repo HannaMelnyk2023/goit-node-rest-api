@@ -1,8 +1,2 @@
-import handleMongooseError from "./handleMongooseError.js";
-import HttpError from "./HttpError.js";
-
-
-export default {
-    handleMongooseError,
-    HttpError
-};
+export { default as handleMongooseError } from "./handleMongooseError.js";
+export { default as HttpError } from "./HttpError.js";
