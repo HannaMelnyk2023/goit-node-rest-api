@@ -1,7 +1,7 @@
 import { validateBody } from "../middlewares/index.js";
 
 import { schemas } from "../models/user.js";
-import ctrl from "../controllers/auth.js";
+import * as ctrl from "../controllers/auth.js";
 
 import { Router } from "express";
 import { authenticate } from "../middlewares/index.js";
