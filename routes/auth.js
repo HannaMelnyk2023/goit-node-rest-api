@@ -1,4 +1,4 @@
-import { validateBody } from "../helpers/validateBody.js";
+import { validateBody } from "../middlewares/index.js";
 
 import { schemas } from "../models/user.js";
 import ctrl from "../controllers/auth.js";
