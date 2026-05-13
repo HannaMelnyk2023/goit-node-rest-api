@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import path from "path";
 
 import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/auth.js";
@@ -24,5 +25,7 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
+
+app.use(express.static(path.join(__dirname, "public")));
 
 export default app;
