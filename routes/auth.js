@@ -5,6 +5,7 @@ import * as ctrl from "../controllers/auth.js";
 
 import { Router } from "express";
 import { authenticate } from "../middlewares/index.js";
+import upload from "../middlewares/upload.js";
 
 const router = Router();
 
@@ -16,5 +17,8 @@ router.post("/login", validateBody(schemas.login), ctrl.login);
 router.get("/current", authenticate, ctrl.getCurrent);
 // log-out
 router.post("/logout", authenticate, ctrl.logout);
+// avatar
+router.patch("/avatars", authenticate, upload.single("avatar"), ctrl.updateAvatar);
+
 
 export default router;

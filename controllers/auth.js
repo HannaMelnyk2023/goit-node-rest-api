@@ -2,8 +2,17 @@ import { User } from "../models/user.js";
 import { HttpError } from "../helpers/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import Jimp from "jimp";
+
 
 const { SECRET_KEY } = process.env;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 
 const register = async (req, res, next) => {
@@ -77,6 +86,33 @@ const logout = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+const updateAvatar = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            throw HttpError(400, "Avatar file is required");
+        }
+        const { path: tempPath, originalname } = req.file;
+        const { _id } = req.user;
+        const filename = `${_id}_${originalname}`;
+        const resultPath = path.join(avatarsDir, filename);
 
-export { register, login, getCurrent, logout };
+        const image = await Jimp.read(tempPath);
+        await image.resize(250, 250).writeAsync(resultPath);
+        await fs.rename(tempPath, resultPath);
+
+        const avatarURL = path.join("avatars", filename);
+        await User.findByIdAndUpdate(_id, { avatarURL });
+        res.json({ avatarURL });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export {
+    register,
+    login,
+    getCurrent,
+    logout,
+    updateAvatar
+}
