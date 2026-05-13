@@ -25,11 +25,13 @@ const register = async (req, res, next) => {
         }
         const hashPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await User.create({ ...req.body, password: hashPassword });
+        const avatarURL = gravatar.url(email, { s: "250", d: "retro" }, true);
+        const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
         res.status(201).json({
             user: {
                 email: newUser.email,
                 subscription: newUser.subscription,
+                avatarURL: newUser.avatarURL,
             }
         });
     } catch (error) {
@@ -53,6 +55,9 @@ const login = async (req, res, next) => {
         if (!passwordCompare) {
             throw HttpError(401, "Email or password is invalid");
         }
+        const payload = {
+            id: user._id,
+        };
         const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
         await User.findByIdAndUpdate(user._id, { token });
         res.json({
@@ -99,7 +104,8 @@ const updateAvatar = async (req, res, next) => {
 
         const image = await Jimp.read(tempPath);
         await image.resize(250, 250).writeAsync(resultPath);
-        await fs.rename(tempPath, resultPath);
+
+        await fs.unlink(tempPath);
 
         const avatarURL = path.join("avatars", filename);
         await User.findByIdAndUpdate(_id, { avatarURL });
