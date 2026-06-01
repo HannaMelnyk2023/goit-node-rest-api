@@ -1,24 +1,24 @@
-const ctrl = require("../controllers/auth.js");
+import { validateBody } from "../middlewares/index.js";
 
-router.post("/register", async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-        const user = await authService.register(name, email, password);
-        res.status(201).json(user);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+import { schemas } from "../models/user.js";
+import * as ctrl from "../controllers/auth.js";
 
-router.post("/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
+import { Router } from "express";
+import { authenticate } from "../middlewares/index.js";
+import upload from "../middlewares/upload.js";
 
-        const token = await authService.login(email, password);
-        res.json({ token });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+const router = Router();
+
+// singup
+router.post("/register", validateBody(schemas.register), ctrl.register);
+// singin
+router.post("/login", validateBody(schemas.login), ctrl.login);
+// current
+router.get("/current", authenticate, ctrl.getCurrent);
+// log-out
+router.post("/logout", authenticate, ctrl.logout);
+// avatar
+router.patch("/avatars", authenticate, upload.single("avatar"), ctrl.updateAvatar);
+
 
 export default router;
