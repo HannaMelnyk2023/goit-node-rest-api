@@ -19,6 +19,9 @@ router.get("/current", authenticate, ctrl.getCurrent);
 router.post("/logout", authenticate, ctrl.logout);
 // avatar
 router.patch("/avatars", authenticate, upload.single("avatar"), ctrl.updateAvatar);
-
+// verify email
+router.get("/verify/:verificationCode", ctrl.verifyEmail);
+// resend verify email
+router.post("/verify", validateBody(schemas.email), ctrl.resendVerifyEmail);
 
 export default router;
