@@ -1,4 +1,4 @@
-const sgMAil = require('@sendgrid/mail');
+import sgMAil from "@sendgrid/mail";
 require('dotenv').config();
 
 
@@ -10,5 +10,6 @@ const sendEmail = async (data) => {
     await sgMAil.send(email);
     return true;
 }
-module.exports = sendEmail;
+
+export default sendEmail;
 

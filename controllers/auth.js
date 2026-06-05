@@ -8,6 +8,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Jimp from "jimp";
 import { nanoid } from "nanoid";
+import sendEmail from "../helpers/sendEmail.js";
+
 
 
 
@@ -28,14 +30,15 @@ const register = async (req, res, next) => {
         const hashPassword = await bcrypt.hash(password, 10);
 
         const avatarURL = gravatar.url(email, { s: "250", d: "retro" }, true);
-        const verificationCode = nanoid();
+        const verificationToken = nanoid();
         const verifyEmail = {
             to: email,
             subject: "Verify email",
-            html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click verify email</a>`
+            html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click verify email</a>`
         };
+        await sendEmail(verifyEmail);
         const newUser = await User.create({
-            ...req.body, password: hashPassword, avatarURL, verificationCode
+            ...req.body, password: hashPassword, avatarURL, verificationToken
         });
         res.status(201).json({
             user: {
@@ -50,13 +53,13 @@ const register = async (req, res, next) => {
 }
 const verifyEmail = async (req, res, next) => {
     try {
-        const { verificationCode } = req.params;
-        const user = await User.findOne({ verificationCode });
+        const { verificationToken } = req.params;
+        const user = await User.findOne({ verificationToken });
         if (!user) {
             throw HttpError(404, "User not found");
         }
         await User
-            .findByIdAndUpdate(user._id, { verify: true, verificationCode: "" });
+            .findByIdAndUpdate(user._id, { verify: true, verificationToken: null });
         res.json({
             message: "Verification successful"
         });
@@ -77,7 +80,7 @@ const resendVerifyEmail = async (req, res, next) => {
         const verifyEmail = {
             to: email,
             subject: "Verify email",
-            html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationCode}">Click verify email</a>`
+            html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click verify email</a>`
         };
         await sendEmail(verifyEmail);
         res.json({
@@ -172,5 +175,8 @@ export {
     login,
     getCurrent,
     logout,
-    updateAvatar
-}
+    updateAvatar,
+    verifyEmail,
+    resendVerifyEmail,
+};
+
